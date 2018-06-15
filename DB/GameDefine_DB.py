@@ -1,0 +1,11 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+MAX_CHAR_NUMBER = 3
+
+DB_RESULT_FAILED = 0
+DB_RESULT_SUCCESS = 1
+DB_RESULT_SAMEGUID = 2
+DB_RESULT_SAMENAME = 3
+DB_RESULT_MAXNUM = 4
+

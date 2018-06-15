@@ -1,0 +1,474 @@
+//#Client send ping
+//@CG
+message CG_PING
+{
+	optional int32 noparam = 1;	//
+}
+//#sever return ping
+//@GC
+message GC_RET_PING
+{
+	optional int32 noparam	= 1;	//	
+	
+}
+
+//#client ask login
+//@CG
+message CG_LOGIN
+{
+	enum VALIDATETYPE
+	{
+		TEST = 0;																	//测试登录模式
+		CYOU = 1;																	//聚合SDK登陆模式
+	}
+
+	//登录基本数据
+	required int32	vtype									= 1;	//验证类型，见VALIDATETYPE枚举
+	required int32	gameversion						= 2;	//游戏大版本号
+	required int32	programversion				= 3;	//代码版本号
+	required int32	publicresourceversion	= 4;	//公共资源版本号
+	required int32	maxpacketid						= 5;	//最大消息包ID
+	required int32	forceenter						= 6;	//如果兼容是否强行登陆
+	required string	deviceid							= 7;	//设备ID
+	required string	devicetype						= 8;	//设备类型
+	required string	deviceversion					= 9;	//设备版本
+
+	//TEST登录数据
+	required string	account								= 10;	//登陆账号
+
+	//CYOU登录数据
+	required string	validateinfo					= 11;	//登陆验证信息
+	required string	channelid							= 12;	//channelid
+	required string	mediachannel					= 13;	//mediachannel
+	
+	//快速登录数据
+	required int32 rapidvalidatecode			= 14;	//快速登录校验
+
+	//预留字段
+	required int32	reservedint1					= 15;
+	required int32	reservedint2					= 16;
+	required int32	reservedint3					= 17;
+	required int32	reservedint4					= 18;
+	required string	reservedstring1				= 19;
+	required string	reservedstring2				= 20;
+	required string	reservedstring3				= 21;
+	required string	reservedstring4				= 22;
+}
+
+//#client login result
+//@GC
+message GC_LOGIN_RET
+{
+	enum LOGINRESULT
+	{
+		SUCCESS   			= 1;
+		ACCOUNTVERIFYFAIL	= 2;
+		READROLELISTFAIL	= 3;
+		ALREADYLOGIN		= 4;
+		QUEUEFULL		= 5;
+		NEEDFORCEENTER = 6;
+		PACKETNOTMATCH = 7;
+		VERSIONNOTMATCH = 8;
+	}
+	enum VALIDATERESULT
+	{
+		OK											= 0;
+		FAIL_VALIDATETYPEERROR	= 1;
+		FAIL_PERFORM						= 2;
+		FAIL_OPCODE							= 3;
+		FAIL_TAG								= 4;
+		FAIL_STATE							= 5;
+		FAIL_DATA_STATUS				= 6;
+		FAIL_CHANNELID					= 7;
+	}
+
+	required int32 	result						= 1;
+	required int32 	validateresult		= 2;
+	required string userid 						= 3;
+	required string oid 							= 4;
+	required string accesstoken 			= 5;
+	required int32	rapidvalidatecode	= 6;
+
+	repeated uint64 roleGUIDList			= 7;
+	repeated int32 	roleTypeList			= 8;
+	repeated string playerNameList		= 9;
+	repeated int32	roleLevelList			= 10;
+	repeated int32  ModelVisualID			= 11;
+	repeated int32  WeaponID					= 12;
+	repeated int32  WeaponEffectGem		= 13;
+}
+
+//#login queue status
+//@GC
+message GC_LOGIN_QUEUE_STATUS
+{
+	enum QUEUESTATUS
+	{
+		BEGINQUEUE = 0;
+		QUEUING = 1;
+		ENDQUEUE = 2;
+	}
+	required int32 	status = 1;
+	required int32 	index = 2;
+}
+
+//#client send createRole
+//@CG
+message CG_CREATEROLE
+{
+	required int32 type							= 1;
+	required string name 						= 2;
+}
+
+//#server send create role result
+//@GC
+message GC_CREATEROLE_RET
+{
+	enum CREATEROLE_RESULT
+	{
+		CREATEROLE_SUCCESS 			= 0;		// 创建人物成功
+		CREATEROLE_FAIL				= 1;		// 服务器内部错误
+		CREATEROLE_FAIL_NAMEEXIST 	= 2;		// 名字已经存在
+		CREATEROLE_FAIL_NAMESCREENING 	= 3;		// 名字含有屏蔽字
+		CREATEROLE_FAIL_LONGNAME 	= 4;		// 名字太长
+
+
+	}
+	required int32 result 			= 1;		// 结构枚举
+	required int32 profession 		= 2;		// 职业
+	required uint64 playerGuid 		= 3;		// 玩家GUID
+	required string playerName      = 4;		// name
+}
+
+//#client send selectRole
+//@CG
+message CG_SELECTROLE
+{
+	required uint64 roleGUID	= 1;			// 玩家GUID
+}
+
+//#server send select role result
+//@GC
+message GC_SELECTROLE_RET
+{
+	enum SELECTROLE_RESULT
+	{
+		SELECTROLE_SUCCESS		= 0;
+		SELECTROLE_FAIL			= 1;
+	}
+	required int32 result 		= 1;		// 选择人物结构
+	required uint64 playerGuid  = 2;		// 玩家GUID
+}
+
+//#Client Request Random Name
+//@CG
+message CG_REQ_RANDOMNAME
+{
+	required int32 none = 1;		//
+}
+
+//#Server ret randomname
+//@GC
+message GC_RET_RANDOMNAME
+{
+	repeated string names = 1;
+}
+
+//#Request Change Scene
+//@CG
+message CG_REQ_CHANGE_SCENE
+{
+	enum CHANGETYPE
+	{
+		TELEPORT	= 0;				//传送石
+		WORLDMAP	= 1;				//世界地图
+		TRAIL			= 2;				//追杀功能
+		POINT			= 3;				//具体点传送
+	}
+
+	required int32 ctype				= 1;
+	required int32 teleportid		= 2;
+	required int32 sceneclassid	= 3;
+	required int32 sceneinstid	= 4;
+	required int32 posX	= 5;
+	required int32 posZ	= 6;
+}
+
+//#Enter Scene
+//@GC
+message GC_ENTER_SCENE
+{
+	required int32 sceneclass = 1;	//sceneclass
+	required int32 sceneinst = 2;	//sceneinst
+	required int32 mainplayerserverid = 3;	//main player server id
+	required int32 posX = 4;	//main player pos X
+	required int32 posZ = 5;	//main player pos Z
+}
+
+//#Client Enter Scene OK
+//@CG
+message CG_ENTER_SCENE_OK
+{
+	required int32 isOK = 1;	//IsOK or Failed
+}
+
+//#client connected heartbeat
+//@CG
+message CG_CONNECTED_HEARTBEAT
+{
+	required int32 isresponse = 1;
+}
+
+//#server connected heartbeat
+//@GC
+message GC_CONNECTED_HEARTBEAT
+{
+	required int32 serveransitime = 1;
+}
+
+//#notice from server
+//@GC
+message GC_NOTICE
+{
+	required string notice = 1; //notice的内容
+	optional int32 filterRepeat = 2;	//是否过滤重复文字 1:是 0:否
+}
+
+//#server send mission list to client
+//@GC
+message GC_MISSION_SYNC_MISSIONLIST
+{
+	repeated int32 missionID		= 1; 	// 任务ID
+	repeated int32 state = 2; 				// 任务状态
+	repeated int32 nParam = 3;				// 任务INT类型参数
+	repeated uint32 havedoneFlag = 4; 	// 任务完成标记
+	repeated int32 qualitytype = 5; 	// 任务完成标记
+}
+
+//#ask to accept mission
+//@CG
+message CG_ACCEPTMISSION
+{
+	required int32 MissionID = 1; //notice的内容
+}
+
+//#result of accept mission
+//@GC
+message GC_ACCEPTMISSION_RET
+{
+	required int32 MissionID = 1; //任务ID
+	required int32 QualityType = 2;	// 任务品质
+	required int32 Ret = 3;	// 接受任务返回结果
+}
+
+//#ask to complete mission
+//@CG
+message CG_COMPLETEMISSION
+{
+	required int32 MissionID = 1; //任务ID
+}
+
+//#result of complete mission
+//@GC
+message GC_COMPLETEMISSION_RET
+{
+	required int32 MissionID = 1; //任务ID
+	required int32 Ret = 2; // 提交任务返回结果
+}
+
+//#ask to abandon mission
+//@CG
+message CG_ABANDONMISSION
+{
+	required int32 MissionID = 1; //任务ID
+}
+
+//#result of abandon mission
+//@GC
+message GC_ABANDONMISSION_RET
+{
+	required int32 MissionID = 1; //任务ID
+	required int32 Ret = 2; // 提交任务返回结果
+}
+
+//#update mission state
+//@GC
+message GC_MISSION_STATE
+{
+	required int32 MissionID = 1; //任务ID
+	required int32 State = 2; // 状态
+}
+
+//#upstate mission param
+//@GC
+message GC_MISSION_PARAM
+{
+	required int32 MissionID = 1; //任务ID
+	required int32 ParamIndex = 2; // 任务参数索引
+	required int32 Param = 3; // 任务参数值
+}
+
+//#Create Player
+//@GC
+message GC_CREATE_PLAYER
+{
+	required int32 serverId 				= 1;   	// ServerID
+	required uint64 guid 						= 2;  	// Player的GUID
+	required int32 sceneInst 				= 3;		// 场景在Server上的ID
+	required int32 sceneClass 			= 4;		// 场景在SceneDefine的ID
+	required int32 dataId 					= 5;		// 模型在rolebase中的ID
+	required int32 posX 						= 6;		// Obj的坐标X
+	required int32 posZ 						= 7;		// Obj的坐标Z
+	required int32 curforce 				= 8;		// 势力ID
+	required string name 						= 9;		// 名字
+	required int32 curProfession 		= 10;		// 当前职业
+	required int32 facedir 					= 11;		// 朝向
+	required string titlename				= 12;		// 当前称号名字
+	required int32 isInPkList				= 13;		// 是否在反击列表中
+	required int32 isDie						= 14;		// 是否死亡
+	optional int32 ReliveTime 			= 15;		// 复活时间
+	required int32 PKModle					= 16;		// PK模式
+	required int32 MountID					= 17;		// MountID
+	required int32 MoveSpeed				= 18;		// 移动速度
+	required int32 ModelVisualID		= 19;		// 玩家模型外观ID
+	required int32 WeaponDataID			= 20;		// 武器ID
+	required int32 WeaponEffectGem	= 22;		// 武器特效宝石
+	required int32 CurTitleID				= 23;		// 当前称号ID
+	required int32 StealthLev				= 24;		// 隐身级别
+	required int32 VipCost					= 25;		// vip 信息
+	required uint64 GuildGuid				= 26;		// 帮会GUID信息
+	required int32 CombatValue				= 27;		//战力
+	required int32 bindparent				= 28; //绑定父节点
+	repeated int32 bindchildren				= 29; //绑定子节点
+	required int32 isEnemy2Self				= 30; //是否与主角敌对
+	optional int32 paoshangState 			= 31;		//当前跑商状态
+	optional int32 lightSkillLevel				= 32;	//当前轻功技能等级
+}
+
+//#Delete Player
+//@GC
+message GC_DELETE_OBJ
+{
+	required int32 serverId = 1; //ServerID
+}
+
+//#Sync Position to Server
+//@CG
+message CG_SYNC_POS
+{
+	required int32 posX = 1; //PosX, 由于坐标为float类型，所以要先乘以100再转换成int
+	required int32 posZ = 2; //PosZ, 由于坐标为float类型，所以要先乘以100再转换成int
+	required int32 ismoviong = 3; //是否正在移动中
+}
+
+//#Sync Position to Client
+//@GC
+message GC_SYNC_POS
+{
+	required int32 serverId = 1; //ServerID
+	required int32 posX = 2; //PosX, 由于坐标为float类型，所以要先转换成float然后除以100
+	required int32 posZ = 3; //PosZ, 由于坐标为float类型，所以要先转换成float然后除以100
+}
+
+//#Player Move
+//@CG
+message CG_MOVE
+{
+	required int32 poscount = 1;	//点的个数
+	repeated int32 posx = 2;		//点的X坐标乘以100
+	repeated int32 posz = 3;		//点的Z坐标乘以100
+	required int32 ismoving =4;	//客户端是否依然在移动
+}
+
+//#Notify Character Move
+//@GC
+message GC_MOVE
+{
+	required int32 serverid = 1;	//objid
+	required int32 poscount = 2;		//点的个数
+	repeated int32 posserial = 3;	//路径序号
+	repeated int32 posx = 4;			//点的X坐标乘以100
+	repeated int32 posz = 5;			//点的Z坐标乘以100
+}
+
+//#Notify Character Stop
+//@GC
+message GC_STOP
+{
+	required int32 serverid = 1;	//objid
+	required int32 posserial = 2;	//路径序号
+	required int32 posx = 3;			//点的X坐标乘以100
+	required int32 posz = 4;			//点的Z坐标乘以100
+}
+
+//#Server Broadcast Attr
+//@GC
+message GC_BROADCAST_ATTR
+{
+	required int32 ObjId 						= 1;    // ObjId
+	optional int32 CurProfession 		= 2;    // 当前职业
+	optional string Name 						= 3;    // 名字
+	optional int32  CurForce				= 4;    // 当前势力
+	optional int32 MoveSpeed 				= 5;    // 移动速度
+	optional int32 bDie							= 6;		// 是否死亡
+	optional int32 faceDir					= 7;		// 朝向
+	optional int32 ModelVisualID		= 8;		// 人物模型外形ID
+	optional int32 WeaponDataID			= 9;		// 武器ID
+	optional int32 WeaponEffectGem	= 11;		// 武器特效宝石
+	optional int32 StealthLev	= 12;		// 隐身级别
+	optional int32 VipCost		= 13;		// VIP数据
+	optional int32 CombatValue	= 14;		//战力
+	optional int32 bindparent	= 15;		//绑定父节点
+	repeated int32 bindchildren	= 16;		//绑定子节点
+}
+//#Server Syn Attr
+//@GC
+message GC_SYN_ATTR
+{
+	required int32 ObjId 				= 1;    // ObjId
+	optional int32 CurHp 				= 2;    // 当前血
+	optional int32 CurMp 				= 3;    // 当前蓝
+	optional int32 CurXp 				= 4;    // 当前怒气
+	optional int32 MaxHP 				= 5;    // 血上限
+	optional int32 MaxMP 				= 6;    // 蓝上限
+	optional int32 MaxXP 				= 7;    // 怒气上限
+	optional int32 CurLev 			= 8;    // 当前等级
+	optional int32 CurExp				= 9;		// 当前经验
+	optional int32 CurMoney			= 10;		// 当前金钱
+	optional int32 CurYuanBao		= 11;		// 当前元宝
+	optional int32 CurBDYuanBao	= 12;		// 当前绑定元宝
+	optional int32 CurZhenQi		= 13;		// 当前真气
+	optional int32 isInCombat		= 14;		// 是否在战斗状态
+}
+
+//#Sync CommonData to Client
+//@GC
+message GC_SYNC_COMMONDATA
+{
+	repeated int32 nIndex 	= 1;   // 索引
+	repeated int32 nValue 	= 2;   // 值
+}
+
+//#Sync CommonFlag to Client
+//@GC
+message GC_SYNC_COMMONFLAG
+{
+	repeated int32 nIndex 	= 1;   // 索引
+	repeated int32 nValue 	= 2;   // 值
+}
+
+//#Client ask to set Commonflag
+//@CG
+message CG_ASK_SETCOMMONFLAG
+{
+	required int32 nBits 	= 1;   // 位
+	required int32 nFlag 	= 2;   // 值
+}
+
+//#Sync CommonFlag to Client
+//@GC
+message GC_ASK_COMMONFLAG_RET
+{
+	required int32 nBits 	= 1;   // 位
+	required int32 nFlag 	= 2;   // 值
+}
